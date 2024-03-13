@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exibindo Dados do Firebase</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-database-compat.js"></script>
+
+</head>
+<body>
+  <h2>Dados do Firebase:</h2>
+  <ul id="dataList"></ul>
+
+  <div style="position: relative;">
+    <canvas id="myCanvas" width="1020" height="1020" style="border:1px solid #2c009b;"></canvas>
+    <img id="sala" src="sala.jpg" alt="sala" width="0" height="0">
+    <img style="width: 0px; height: 0px;" id="carro" src="sapinho.jpg" alt="carro">
+  </div>
+
+
+  <script>
+
+    const firebaseConfig = {
+    apiKey: "AIzaSyAxuoam0v52E5MzzmqRIE_yhhiDG4_rar8",
+    authDomain: "projeto-iot-9fc2d.firebaseapp.com",
+    projectId: "projeto-iot-9fc2d",
+    storageBucket: "projeto-iot-9fc2d.appspot.com",
+    messagingSenderId: "940570950850",
+    appId: "1:940570950850:web:524d2aa2d53e3f1338cf5b",
+    measurementId: "G-S7ZCHRCL7B"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Referência para os dados no Firebase
+    const dataRef = database.ref('carro');
+    var x = 50;
+    var y = 50;
+    
+    console.log("socorro");
+    dataRef.on('value', (snapshot) => {
+      snapshot.forEach((childSnapshot) => {
+        
+        const data = childSnapshot.val();
+        console.log(x);
+          
+      });
+    });
+
+    // dataRef.once('value')
+    // .then((snapshot) => {
+    //   // Manipula os dados obtidos (nesse exemplo, apenas os exibe no console)
+    //   const dados = snapshot.val();
+    //   console.log("Dados do nó 'example':", dados);
+    // })
+    // .catch((error) => {
+    //   console.error("Erro ao obter dados:", error);
+    // });
+
+  </script>
+
+<!-- <script>
+esse daqui ta funcioonadno
+
+var x = 50;
+var y = 50;
+
+var imgSala = document.getElementById("sala");
+var imgCarro = document.getElementById("carro");
+const c = document.getElementById("myCanvas");
+
+setInterval(function() {
+  // firebase.initializeApp(firebaseConfig);
+  // const database = firebase.database();
+  console.log("oiii")
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.drawImage(imgSala, 150, 190);
+  ctx.drawImage(imgCarro, x, y, 150, 190);
+
+
+  x += 50;
+  y += 50;
+
+  if(x > c.height){
+    x = 50;
+    y = 50;
+  }
+  }, 1000)
+
+
+
+</script> -->
+
+</body>
+</html>

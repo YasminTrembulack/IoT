@@ -1,0 +1,171 @@
+const char* FB_HOST = "https://banco-de-dados-9f2cd-default-rtdb.firebaseio.com/";
+const char* FB_KEY = "AV4ZTyBcYK2k6b3qLG4dEnAXXipQcIWTzg7GOfLW";
+
+bool status = Firebase.updateNode(fbdo, "/banco-de-dados-9f2cd", json);
+
+
+
+
+
+#include <Arduino.h>
+#include <WiFi.h>
+#include "DHT.h"
+#include <FirebaseESP32.h>
+#include "PubSubClient.h"
+#include <Adafruit_Sensor.h>
+#include <string.h>
+
+/*==========Constants=========*/
+const char* WIFI_SSID = "Vivo-Internet-BF17";
+const char* WIFI_PW = "78814222";
+
+const char* MQTT_BROKER = "test.mosquitto.org";
+const uint16_t MQTT_PORT = 1883;
+const char* MQTT_USERNAME = "";
+const char* MQTT_PASSWORD = "";
+
+/*========Variables=======*/
+WiFiClient wifi_client;
+PubSubClient mqtt_client(wifi_client);
+
+FirebaseData fbdo;
+FirebaseAuth fbauth;
+FirebaseConfig fbconfig;
+ 
+const uint8_t PIN_DHT = 33;
+const uint8_t PIN_LED = 35;
+
+#define DHTTYPE DHT11
+ 
+DHT dht(PIN_DHT, DHTTYPE);
+
+const char* FB_HOST = "https://iiot-dta-default-rtdb.firebaseio.com";
+const char* FB_KEY = "Ag5gJMhAnTWQgDVhegkDRF1uTjJfpMUDkXB8WBEa";
+
+bool connectWiFi(const char* ssid, const char* pw)
+{
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  WiFi.begin(ssid, pw);
+  Serial.print("\nConectando!");
+  int tentativa = 0;
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    tentativa++;
+    if (tentativa > 300)
+    {
+      return false;
+    }
+    
+    Serial.print(".");
+    delay(200);
+  }
+  Serial.print("\nConectado com o IP: ");
+  Serial.println(WiFi.localIP());
+  return true;
+}
+
+void callback(char* topic, byte* payload, unsigned int length)
+{
+  Serial.printf("Mensagem recebida no tópico %s: ", topic);
+
+  for (int i = 0; i < length; i++)
+  {
+    Serial.print((char)payload[i]);
+  }
+  Serial.println();
+
+}
+
+int datacallback(char* topic, byte* payload)
+{
+  if ((strcmp(topic, "iiot-dta/check")) == 0)
+  {
+    if (payload[0] == 49 && payload[1] == 48 && payload[2] == 48)
+    {
+      return 1;
+    }
+    if (payload[0] == 50 && payload[1] == 48 && payload[2] == 48)
+    {
+      return 2;
+    }
+  }
+  if ((strcmp(topic, "iiot-dta/request")) == 0)
+  {
+    if (payload[0] == 49 && payload[1] == 48 && payload[2] == 48)
+    {
+      return 3;
+    }
+  }
+}
+
+void setup()
+{
+  dht.begin();
+  pinMode(PIN_DHT, INPUT);
+  pinMode(PIN_LED, OUTPUT);
+
+  Serial.begin(115200);
+  connectWiFi(WIFI_SSID, WIFI_PW);
+
+  fbconfig.database_url = FB_HOST;
+  fbconfig.signer.tokens.legacy_token = FB_KEY;
+  fbdo.setBSSLBufferSize(4096, 1024);
+  Firebase.reconnectWiFi(true);
+  Firebase.begin(&fbconfig, &fbauth);
+
+  mqtt_client.setServer(MQTT_BROKER, MQTT_PORT);
+  mqtt_client.setCallback(callback);
+ 
+  while (!mqtt_client.connected())
+  {
+    String client_id = "dta-Jessi";
+    client_id += String(WiFi.macAddress());
+
+    if(mqtt_client.connect(client_id.c_str(), MQTT_USERNAME, MQTT_PASSWORD))
+    {
+      Serial.println("Conexao MQTT bem sucedida");
+    }
+  }
+  mqtt_client.subscribe("testdta");
+}
+
+
+void loop()
+{
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+
+  FirebaseJson json;
+
+  int op = datacallback();
+
+  switch (op)
+  {
+  case 1:
+    mqtt_client.publish("iiot-dta/check", "1");
+    break;
+  
+  case 2:
+    digitalWrite(PIN_LED, HIGH);
+    delay(5000);
+    digitalWrite(PIN_LED, LOW);
+    break;
+  
+  case 3:
+    bool status = Firebase.updateNode(fbdo, "/challenge02/subsys_03/", json);
+    if (!status)
+    {
+      Serial.printf("\n", fbdo.errorReason().c_str());
+    }  
+  }
+
+  json.set("/temperature/", temperature);
+  json.set("/humidity/", humidity);
+
+  Serial.printf("Temperature: %4.2f \t Humidity: %4.2f \n", temperature, humidity);
+
+  mqtt_client.loop();
+
+  delay(30000);
+}

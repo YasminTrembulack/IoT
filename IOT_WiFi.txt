@@ -1,0 +1,49 @@
+/*---Includes---*/
+/*---Includes---*/
+#include <WiFi.h>
+
+/*---Variables---*/
+
+/*---Hardware mapping---*/
+
+/*---Constants---*/
+
+/*---Setup---*/
+void setup()
+{
+  Serial.begin(115200);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+
+  //WiFi.begin("ssid","senha");
+  
+  //WiFi.begin(WiFi.SSID(),"senha"); //pegar o wifi com melhor sinal
+}
+
+/*---Loop---*/
+void loop()
+{
+  int qtde_wifi = WiFi.scanNetworks();
+
+  if(qtde_wifi == 0)
+  {
+    return;
+  }
+  for(int i = 0; i < qtde_wifi; i++)
+  {
+    Serial.printf("\nQuantidade de redes disponiveis %i ", qtde_wifi);
+    Serial.print("\nIndice: ");
+    Serial.print(i+1);
+    Serial.print("\nSSID: ");
+    Serial.print(WiFi.SSID(i)); //nome
+    Serial.print("\nRSSI: ");
+    Serial.print(WiFi.RSSI(i)); //intensidade do sinal
+    Serial.print("\nAuth: ");
+    Serial.print(WiFi.encryptionType(i)); //tipo de autenticação(aberta, senha,...)
+    Serial.println(); // Serial.print("\n")
+  }
+  Serial.println();
+  Serial.println();
+  delay(7000);
+}

@@ -1,0 +1,5 @@
+CALCULO DO P DE POTENCIA
+
+P = Kp*(angulo_atual - angulo_desejado)
+
+P é a potência dos motores

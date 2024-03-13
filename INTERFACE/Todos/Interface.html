@@ -1,0 +1,71 @@
+<!-- <canvas id="myCanvas" width="1885" height="940" style="border:1px solid #000000;">
+</canvas>
+
+<script>
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(95, 50, 40, 0, 2 * Math.PI);
+    ctx.stroke();
+    </script> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overlay de Imagens com Canvas (Atualização em Tempo Real)</title>
+</head>
+<body>
+    <canvas id="myCanvas" width="1885" height="938"></canvas>
+
+    <script>
+    var canvas = document.getElementById('myCanvas');
+    var context = canvas.getContext('2d');
+    
+    var image1 = new Image();
+    var image2 = new Image();
+
+    // Agora, carregamos a primeira imagem
+    image1.onload = function() {
+        // Quando a primeira imagem estiver carregada, carregamos a segunda
+        image2.onload = function() {
+        // Define as posições iniciais das imagens
+        var x1 = 0;
+        var x2 = 0;
+
+        function draw() {
+            // Limpa o canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Desenha a segunda imagem (d2) primeiro
+            context.drawImage(image2, x2, 0, 1000, 1000);
+
+            // Em seguida, desenha a primeira imagem (d1)
+            context.drawImage(image1, x1, 0, 100, 100);
+
+            // Atualiza as posições para a próxima renderização
+            x1 += 1;  // ou qualquer valor desejado para a velocidade
+            
+
+            // Solicita a próxima animação
+            requestAnimationFrame(draw);
+        }
+
+        // Inicia a animação
+        draw();
+        };
+
+        // Define a fonte da segunda imagem
+        image2.src = 'sala.jpg';
+    };
+
+    // Define a fonte da primeira imagem
+    image1.src = 'carro.jpg';
+    </script>
+</body>
+</html>
+
+
+
+    

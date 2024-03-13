@@ -1,0 +1,64 @@
+#include <Arduino.h>
+#include <Wire.h>
+
+int c = 0;
+float GyroErrorZ, GyroZ;
+
+float currentTime, previousTime , elapsedTime;
+float yaw;
+
+float RateCalibrationYaw;
+int RateCalibrationNumber;
+
+void readGyro(){
+  Wire.beginTransmission(0x68);
+  Wire.write(0x43);
+  Wire.endTransmission(); 
+  Wire.requestFrom(0x68,6);
+
+  GyroZ = (Wire.read() << 8 | Wire.read()) / 131.0;
+}
+
+void calculateError(){
+  while (c < 5000)
+  {
+    readGyro();
+    GyroErrorZ += GyroZ;
+    c++;
+  }
+  
+  GyroErrorZ =  GyroErrorZ/ 5000;
+
+  // Calibração adicional se necessário
+  RateCalibrationYaw = 1.0; // Ajuste conforme necessário
+  GyroErrorZ *= RateCalibrationYaw;
+}
+
+void setup() {
+  Serial.begin(115200);
+  Wire.begin();
+  Wire.beginTransmission(0x68); 
+  Wire.write(0x6B);
+  Wire.write(0x00);
+  Wire.endTransmission(true);
+
+  calculateError();
+  delay(20);
+
+  currentTime = millis();
+}
+
+void loop() {
+  previousTime = currentTime;
+  currentTime = millis();
+  elapsedTime = (currentTime - previousTime) / 1000000; // Divide by 1000 to get seconds
+
+  readGyro();
+
+  GyroZ -= GyroErrorZ; 
+
+  yaw += GyroZ * elapsedTime;
+
+  Serial.printf("%.7f", yaw);
+  Serial.println();
+}

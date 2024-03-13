@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overlay de Imagens com Canvas (Atualização em Tempo Real)</title>
+  <!-- Inclua o SDK do Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
+</head>
+<body>
+  <canvas id="myCanvas" width="2000" height="1000"></canvas>
+
+  <script>
+    var canvas = document.getElementById('myCanvas');
+    var context = canvas.getContext('2d');
+    
+    var image1 = new Image();
+    var image2 = new Image();
+
+    // Configurações do Firebase (substitua pelos dados do seu projeto)
+    const firebaseConfig = {
+    apiKey: "AIzaSyAxuoam0v52E5MzzmqRIE_yhhiDG4_rar8",
+    authDomain: "projeto-iot-9fc2d.firebaseapp.com",
+    databaseURL: "https://projeto-iot-9fc2d-default-rtdb.firebaseio.com",
+    projectId: "projeto-iot-9fc2d",
+    storageBucket: "projeto-iot-9fc2d.appspot.com",
+    messagingSenderId: "940570950850",
+    appId: "1:940570950850:web:524d2aa2d53e3f1338cf5b"
+
+    
+  };
+
+    // Inicialize o Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Obtenha uma referência para o Realtime Database
+    var database = firebase.database();
+
+    // Agora, carregamos a primeira imagem
+    image1.onload = function() {
+      // Quando a primeira imagem estiver carregada, carregamos a segunda
+      image2.onload = function() {
+        // Define as posições iniciais das imagens
+        var x1 = 0;
+        var y1 = 0;
+        var x2 = 0;
+        var y2 = 0;
+
+        function draw() {
+          // Limpa o canvas
+          context.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Desenha a segunda imagem (d2) primeiro
+          context.drawImage(image2, x2, y2, 400, 400);
+
+          // Em seguida, desenha a primeira imagem (d1)
+          context.drawImage(image1, x1, y1, 400, 400);
+
+          // Atualiza as posições para a próxima renderização
+          // Use valores do Realtime Database para atualizar x1 e y1
+          var referencia = database.ref('carro');
+          referencia.on('value', function(snapshot) {
+            var dados = snapshot.val();
+            x1 = dados.X || 0;
+            y1 = dados.Y || 0;
+          });
+
+          // Solicita a próxima animação
+          requestAnimationFrame(draw);
+        }
+
+        // Inicia a animação
+        draw();
+      };
+
+      // Define a fonte da segunda imagem
+      image2.src = 'sala.jpg';
+    };
+
+    // Define a fonte da primeira imagem
+    image1.src = 'carro.jpg';
+  </script>
+</body>
+</html>

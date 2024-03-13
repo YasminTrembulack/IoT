@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<div style="position: relative;">
+  <canvas id="myCanvas" width="1020" height="1020" style="border:1px solid #2c009b;"></canvas>
+  <img id="sala" src="sala.jpg" alt="sala" width="0" height="0">
+  <img style="width: 0px; height: 0px;" id="carro" src="sapinho.jpg" alt="carro">
+</div>
+
+<script>
+
+var x = 50;
+var y = 50;
+
+var imgSala = document.getElementById("sala");
+var imgCarro = document.getElementById("carro");
+const c = document.getElementById("myCanvas");
+
+setInterval(function() {
+  // firebase.initializeApp(firebaseConfig);
+  // const database = firebase.database();
+  console.log("oiii")
+  var ctx = c.getContext("2d");
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.drawImage(imgSala, 0, 0);
+  ctx.drawImage(imgCarro, x, y, 150, 190);
+
+
+  x += 50;
+  y += 50;
+
+  if(x > c.height){
+    x = 50;
+    y = 50;
+  }
+  }, 1000)
+
+</script> 
+
+</body>
+</html>
+
+
+
+
+<!-- Example with Firebase SDK 8
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+
+
+
+<script type="module">
+  const firebaseConfig = {
+    apiKey: "AIzaSyAxuoam0v52E5MzzmqRIE_yhhiDG4_rar8",
+    authDomain: "projeto-iot-9fc2d.firebaseapp.com",
+    databaseURL: "https://projeto-iot-9fc2d-default-rtdb.firebaseio.com",
+    projectId: "projeto-iot-9fc2d",
+    storageBucket: "projeto-iot-9fc2d.appspot.com",
+    messagingSenderId: "940570950850",
+    appId: "1:940570950850:web:524d2aa2d53e3f1338cf5b"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  
+  var database = firebase.database();
+  var auth = firebase.auth();
+
+  // Check if the user is signed in
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      // User is signed in, proceed with database access
+      var carroRef = database.ref('carro');
+      
+      // Continue with your database operations
+      carroRef.once('value')
+        .then(function(snapshot) {
+          var data = snapshot.val();
+          console.log(data);
+        })
+        .catch(function(error) {
+          console.error('Error reading data: ', error);
+          console.error('Error code: ', error.code);
+          console.error('Error message: ', error.message);
+        });
+    } else {
+      console.log("User not signed in");
+    }
+  });
+
+
+  function signInWithGoogle() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    auth.signInWithPopup(provider)
+      .then(function(result) {
+        var token = result.credential.accessToken;
+        var user = result.user;
+        console.log("User signed in:", user);
+      })
+      .catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.error("Google sign-in error:", errorCode, errorMessage);
+      });
+  }
+  document.getElementById('googleSignInButton').addEventListener('click', signInWithGoogle);
+
+</script>
+
+<button id="googleSignInButton">Sign in with Google</button> -->
+
+

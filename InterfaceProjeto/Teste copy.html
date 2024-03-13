@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="refresh" content="0.5">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overlay de Imagens com Canvas (Atualização em Tempo Real)</title>
+  <!-- Inclua o SDK do Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
+</head>
+<body>
+  <canvas id="tela" width="2000" height="1000"></canvas>
+
+  <script>
+      var tela = document.getElementById("tela");
+      var c = tela.getContext("2d");
+
+  function desenhaSala() {
+      var imagem = new Image();
+      imagem.src = "sala.jpg";
+      imagem.onload = function() {
+              c.drawImage(imagem,10,10);
+      }
+  }
+
+  function desenhaCarro(x, y) {
+      var imagem2 = new Image();
+      imagem2.src = "carro.jpg";
+      imagem2.onload = function() {
+              c.drawImage(imagem2,x,y);
+      }
+  }
+
+  desenhaSala();
+  desenhaCarro(0, 0);
+
+  </script>
+</body>
+</html>

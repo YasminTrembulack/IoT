@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<div style="position: relative;">
+  <img id="sala" src="sala.jpg" alt="sala" width="1000" height="500">
+  <img style="position: absolute; top: 50px; left: 50px; width: 150px; height: 190px;" id="carro" src="carro.jpg" alt="carro">
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAxuoam0v52E5MzzmqRIE_yhhiDG4_rar8",
+  authDomain: "projeto-iot-9fc2d.firebaseapp.com",
+  databaseURL: "https://projeto-iot-9fc2d-default-rtdb.firebaseio.com",
+  projectId: "projeto-iot-9fc2d",
+  storageBucket: "projeto-iot-9fc2d.appspot.com",
+  messagingSenderId: "940570950850",
+  appId: "1:940570950850:web:524d2aa2d53e3f1338cf5b"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+function startAnimation() {
+  var c = document.getElementById("myCanvas");
+  var ctx = c.getContext("2d");
+  var imgSala = document.getElementById("sala");
+  var imgCarro = document.getElementById("carro");
+
+  // Posições iniciais
+  var x = 50;
+  var y = 50;
+
+  function animate() {
+    // Limpa o canvas
+    ctx.clearRect(0, 0, c.width, c.height);
+
+    // Desenha a imagem "sala.jpg"
+    ctx.drawImage(imgSala, 0, 0, c.width, c.height);
+
+    // Obtém as coordenadas X e Y do Realtime Database
+    var referencia = database.ref('carro');
+    referencia.once('value').then(function(snapshot) {
+      var dados = snapshot.val();
+      // Atualiza as posições com base nos dados do Realtime Database
+      x = dados.X || x;
+      y = dados.Y || y;
+
+      // Desenha a imagem "carro.jpg" em cima da imagem "sala.jpg" com dimensões ajustadas
+      ctx.drawImage(imgCarro, x, y, 150, 190);
+
+      // Solicita a próxima animação
+      requestAnimationFrame(animate);
+    });
+  }
+
+  // Inicia a animação
+  animate();
+}
+// Inicia a animação automaticamente ao carregar a página
+startAnimation();
+</script>
+
+</body>
+</html>
+
+
+
+<!-- AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<body>
+
+<div style="position: relative;">
+  <canvas id="myCanvas" width="1885" height="940" style="border:1px solid #3d28b4;"></canvas>
+</div>
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAxuoam0v52E5MzzmqRIE_yhhiDG4_rar8",
+    authDomain: "projeto-iot-9fc2d.firebaseapp.com",
+    databaseURL: "https://projeto-iot-9fc2d-default-rtdb.firebaseio.com",
+    projectId: "projeto-iot-9fc2d",
+    storageBucket: "projeto-iot-9fc2d.appspot.com",
+    messagingSenderId: "940570950850",
+    appId: "1:940570950850:web:524d2aa2d53e3f1338cf5b"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase();
+
+  function startAnimation() {
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+
+    // Carrega as imagens
+    var imgSala = new Image();
+    imgSala.src = 'sala.jpg';
+    var imgCarro = new Image();
+    imgCarro.src = 'carro.jpg';
+
+    // Espera as imagens carregarem antes de iniciar a animação
+    Promise.all([imgSala, imgCarro]).then(() => {
+      function animate(x, y) {
+        // Limpa o canvas
+        ctx.clearRect(0, 0, c.width, c.height);
+
+        // Desenha a imagem "sala.jpg"
+        ctx.drawImage(imgSala, 0, 0, c.width, c.height);
+
+        // Desenha a imagem "carro.jpg" nas coordenadas X e Y do Realtime Database
+        ctx.drawImage(imgCarro, x, y, 150, 190);
+
+        // Solicita a próxima animação
+        requestAnimationFrame(() => animate(x, y));
+      }
+
+      // Obtém as coordenadas X e Y do Realtime Database e inicia a animação
+      const referencia = ref(database, 'carro');
+      onValue(referencia, (snapshot) => {
+        const dados = snapshot.val();
+        const x = dados?.X || 50; // valor padrão se X não estiver definido
+        const y = dados?.Y || 50; // valor padrão se Y não estiver definido
+        animate(x, y);
+      });
+    });
+  }
+
+  // Inicia a animação automaticamente ao carregar a página
+  startAnimation();
+</script>
+
+</body>
+</html> -->
